@@ -1,0 +1,12 @@
+{
+    "keep_preview_aspect_ratio": false,
+    "resolution": "4K",
+    "width": 2560,
+    "height": 1440,
+    "framerate": 30.0,
+    "preview_size": 1000,
+    "vfov": 54,
+    "hfov": 62.1,
+    "real_qr_dimension_height" : 0.094,
+    "real_qr_dimension_width" : 0.103
+}

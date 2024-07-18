@@ -1,0 +1,1 @@
+ros2 service call /motion_control/set_parameters rcl_interfaces/srv/SetParameters "{parameters: [{name: "safety_override", value: {type: 4, string_value: "full"}}]}"

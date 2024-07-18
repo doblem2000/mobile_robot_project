@@ -1,0 +1,21 @@
+poly_creator_parameters:
+  import_path: {
+    type: string,
+    description: "The path to the file containing the data.",
+    default_value: ""
+  }
+  export_path: {
+    type: string,
+    description: "The path to the file where the data is saved.",
+    default_value: "./polygons.dat"
+  }
+  show_cardinal_points: {
+    type: bool,
+    description: "If True, the cardinal points are shown.",
+    default_value: True
+  }
+  show_neighbors: {
+    type: bool,
+    description: "If True, the neighbors are shown.",
+    default_value: False
+  }

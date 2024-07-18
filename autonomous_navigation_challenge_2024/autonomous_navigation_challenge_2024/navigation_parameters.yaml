@@ -1,0 +1,16 @@
+navigation_parameters:
+  perception_topic: {
+    type: string,
+    description: "The topic where the perception data is published",
+    default_value: "/perception"
+  }
+  mock_kidnap: {
+    type: bool,
+    description: "",
+    default_value: false
+  }
+  show_topological_map: {
+    type: bool,
+    description: "If true, the topological map will be shown in RViz",
+    default_value: false
+  }

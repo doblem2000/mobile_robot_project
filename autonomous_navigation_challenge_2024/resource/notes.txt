@@ -1,0 +1,10 @@
+# Run the detector
+colcon build
+source install/setup.bash
+ros2 run autonomous_navigation_challenge_2024 test_detector --ros-args -p pipeline:=<pipeline>
+
+# Play a bagfile
+ros2 bag play approccio_atrio_atrio_360 -r 0.3
+
+# Public a static image
+ros2 run autonomous_navigation_challenge_2024 image_publisher --ros-args -p img:=<image_path>

@@ -1,0 +1,143 @@
+#Undock by cli
+ros2 action send_goal /undock irobot_create_msgs/action/Undock {}
+
+#Dock by cli
+ros2 action send_goal /dock irobot_create_msgs/action/Dock {}
+
+#Poweroff
+ros2 service call /robot_power irobot_create_msgs/srv/RobotPower
+
+#Teleop
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+#Rviz
+ros2 launch turtlebot4_viz view_robot.launch.py
+
+#SLAM
+ros2 launch turtlebot4_navigation slam.launch.py
+ros2 launch turtlebot4_viz view_robot.launch.py
+ros2 service call /slam_toolbox/save_map slam_toolbox/srv/SaveMap "name:
+  data: 'test'"
+  
+#Navigation
+ros2 launch turtlebot4_navigation localization.launch.py map:=test.yaml
+ros2 launch turtlebot4_navigation nav2.launch.py
+ros2 launch turtlebot4_viz view_robot.launch.py
+
+#Simulation
+ros2 launch diem_gazebo turtlebot4_ignition_no_dock.launch.py world:=square
+
+# Accesso ssh per riavviare i nodi ros
+ssh ubuntu@192.168.0.101
+password: turtlebot4
+comando da lanciare per riavviare i nodi: turtlebot4-service-restart
+
+# Parametri camera funzionanti
+CONFIG 1 -> quella usata
+resolution massimo: 4K
+height massimo: 1440
+width massimo: 2560
+preview massima: 1000
+fps: 15
+keep_aspect_ratio
+
+CONFIG 2
+resolution massimo: 1080
+height massimo: 720
+width massimo: 1280
+preview massima: 700
+fps: 15
+
+# Configurazione telecamera
+#sudo nano /opt/ros/humble/share/turtlebot4_bringup/config/oakd_pro.yaml
+
+#partire robot reale con jaylbreak
+colcon build; source ~/.bashrc; source ./install/setup.bash 
+ros2 launch turtlebot4_navigation localization.launch.py map:=./src/turtlebot4/diem_turtlebot_ws/src/map/diem_map_clean.yaml 
+ros2 launch turtlebot4_viz view_robot.launch.py -> e poi localizzare robot su rviz
+ros2 launch turtlebot4_navigation nav2.launch.py params_file:=src/mobile-robots-project-work/autonomous_navigation_challenge_2024/autonomous_navigation_challenge_2024/config/nav2.yaml
+ros2 run autonomous_navigation_challenge_2024 perception --ros-args -p on_turtlebot:=true -p debug:=true
+ros2 run autonomous_navigation_challenge_2024 navigation
+
+
+#fast collegamento con nostre directory
+ping 192.168.0.100
+sudo ntpdate ntp.ubuntu.com
+./src/turtlebot4/scripts/configure_discovery.sh 
+ros2 daemon stop
+ros2 daemon start
+ros2 topic list
+
+#far partire robot in simulazione con jailbreak
+colcon build; source ~/.bashrc; source ./install/setup.bash 
+ros2 launch diem_gazebo turtlebot4_ignition_no_dock.launch.py rviz:=true nav2:=true localization:=true map:=./src/turtlebot4/diem_turtlebot_ws/src/map/diem_map_clean.yaml world:=diem_map params_file:=src/mobile-robots-project-work/autonomous_navigation_challenge_2024/autonomous_navigation_challenge_2024/config/nav2.yaml
+ros2 run autonomous_navigation_challenge_2024 perception --ros-args -p on_turtlebot:=false 
+ros2 run autonomous_navigation_challenge_2024 navigation
+
+
+PROBLEMI LAUNCH localization:
+se da errore failed to send response to /map_server/change_state -> risolvere con ros2 daemon stop, ros2 daemon start
+
+
+#risolvere orario
+da collegamento ssh: 
+  ssh ubuntu@192.168.0.100
+  sudo service ntp stop
+  sudo ntpdate ntp.ubuntu.com
+  sudo service ntp start
+da collegamento pagina web:
+  reboot robot da create 3 pagina di configurazione 
+
+colcon build; source ~/.bashrc; source ./install/setup.bash 
+
+# Per creare la mappa topologica
+
+# Lanciare la mappa e Rviz 
+ros2 launch turtlebot4_navigation localization.launch.py map:=./src/turtlebot4/diem_turtlebot_ws/src/map/diem_map.yaml 
+ros2 launch turtlebot4_viz view_robot.launch.py
+# Caricare da rviz il file di configurazione che sta nella cartella config, poi lanciare il nodo.
+ros2 run autonomous_navigation_challenge_2024 poly_creator
+# Questo "programma" ha diversi tool, che possono essere selezionati cliccando su "Continue": CREATE_POLYGON, CREATE_EDGE, EDIT_CENTER, EDIT_CARDINAL_POINTS, DELETE_POLYGON.
+# Tutti i tool devono essere usati avendo selezionato da RViz il tool "PublishPoint" e poi cliccando sulla mappa.
+# Con il tool CREATE_POLYGON si iniziare a creare il poligono cliccando i singoli punti sulla mappa.
+# Per chiudere il poligono, basta cliccare su "Next" ed il poligono verrà creato.
+# Per creare un arco tra due poligoni, bisogna selezionare il tool CREATE_EDGE poi cliccare sul primo poligono, poi sul secondo, ed inserire sulla shell N,S,E,W, in base a dove si trova il secondo poligono rispetto al primo.
+# Per interrompere la creazione di un poligono o di un arco basta cliccare su "break".
+# Per modificare il centro di un nodo bisogna selezionare il tool EDIT_CENTER, e poi cliccando il punto in cui vogliamo posizionare il nuovo centro del nodo.
+# Per modificare un punto cardinale di un nodo bisogna selezionare il tool EDIT_CARDINAL_POINTS, selezionare il nodo, e poi da shell inserire il punto cardinale da modificare e la nuova dimensione.
+# Per eliminare un nodo selezionare il tool DELETE_POLYGON, e poi selezionare il nodo da cancellare.
+(NON ELIMINARE IL PRIMO NODO CREATO ALTRIMENTI SI CANCELLA TUTTA LA MAPPA) 
+# Alla fine della creazione, per salvare, bisogna cliccare su "Stop" e verrà creato il file "polygon.dat" nella cartella da dove abbiamo lanciato il nodo
+# per modificare mappa già esistente aggiungi: --ros-args -p import_path:=path
+
+
+# Nel caso in cui la create3 non si connette, quindi ci sono solo due luci accese ma vedevamo i nodi, bisogna riavviare il turtlebot in questo modo:
+- Entrare nel turtlebot con ssh e scrivere "sudo reboot", senza dare invio
+- Spegnere il turtlebot dal tasto
+- Collegarlo alla base, e quindi accenderlo, e appena si accende la luce bianca del tasto, dare invio dalla shell
+
+# Nel caso in cui la create3 non si connette, quindi ci sono solo due luci accese ma NON si vedono i nodi, bisogna riavviare il turtlebot in questo modo:
+dall'interfaccia web fare application->restart application 
+
+
+#vedere saturaizone banda 
+ros2 run bandwidth_measurererer bandwidth_measurererer /oakd/rgb/preview/image_raw/compressed sensor_msgs/msg/CompressedImage
+
+
+#fallimento stack navigazione -> sourcing del bashrc
+
+kidnapped in simulazione:
+ros2 launch diem_gazebo turtlebot4_ignition_no_dock.launch.py rviz:=true nav2:=true localization:=true map:=./src/turtlebot4/diem_turtlebot_ws/src/map/diem_map.yaml world:=diem_map params_file:=src/mobile-robots-project-work/autonomous_navigation_challenge_2024/autonomous_navigation_challenge_2024/config/nav2.yaml
+  far partire lo stack
+  da gazebo aprire component inspertcort
+  selelzionare modello robot_
+  mettere pose giusta con simulazione pausa e poi far partire navigazione
+ros2 run autonomous_navigation_challenge_2024 navigation --ros-args -p mock_kidnap:=true
+ros2 run autonomous_navigation_challenge_2024 mock_kidnap
+
+#clear all
+source ~/.bashrc; ros2 daemon stop; ros2 daemon start
+
+
+distanza -> dimensioni in pixel xy
+100 -> 153 137

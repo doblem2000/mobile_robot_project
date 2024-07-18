@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>autonomous_navigation_challenge_2024</name>
+  <version>0.0.0</version>
+  <description>This module contains the code for the 2024 challenge of the "Mobile Robots for Critial Missions" course</description>
+  <maintainer email="a.langella31@studenti.unisa.it">Antonio Langella</maintainer>
+  <license>MIT</license>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <exec_depend>python3-shapely</exec_depend>
+  <exec_depend>tf_transformations</exec_depend>
+  <exec_depend>rviz_visual_tools</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+
+  <depend>generate_parameter_library</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
